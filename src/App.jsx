@@ -4,38 +4,80 @@ import rat from "../public/images/rat.png";
 import food from "../public/images/food.png";
 
 function App() {
-  const level1 = [
+  const levels = [[
     [1, 0, 1, 0],
     [1, 1, 0, 0],
     [2, 1, 1, 1],
     [1, 0, 1, 0],
     [1, 0, 1, 3],
-  ];
-  const level2 = [
+  ], 
+  [
     [2, 0, 1, 0, 1, 1, 1],
     [1, 1, 1, 1, 1, 0, 1],
     [1, 0, 1, 0, 0, 3, 1],
     [1, 0, 1, 1, 0, 1, 1],
-  ];
-  const [levelCount, setLevelCount] = useState(1);
+  ],
+  [
+    [0, 0, 1, 0, 1, 1, 0, 0, 1, 1],
+    [2, 1, 0, 0, 0, 1, 1, 0, 1, 1],
+    [1, 1, 1, 1, 0, 1, 0, 1, 1, 0],
+    [1, 0, 1, 0, 1, 1, 1, 1, 1, 1],
+    [1, 1, 1, 1, 1, 0, 1, 0, 0, 0],
+    [1, 1, 0, 1, 0, 0, 1, 1, 1, 1],
+    [1, 0, 1, 0, 3, 0, 1, 0, 0, 1],
+    [1, 1, 1, 0, 1, 1, 0, 0, 1, 1],
+    [1, 0, 1, 1, 0, 1, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1, 0, 1, 0],
+    [1, 1, 0, 1, 0, 0, 1, 1, 0, 0],
+  ]
+];
+  const [timer, setTimer] = useState(10);
+  const [levelCount, setLevelCount] = useState(0);
   const [ratPosition, setRatPosition] = useState([-1, -1]);
-  const [level, setLevel] = useState(level2);
+  const [level, setLevel] = useState(levels[levelCount]);
+  const [timerInterval, setTimerInterval] = useState()
+useEffect(() => {
+  // initTimer()
+  console.log('t : ', timer)
+  setInterval(() => {
+    // if(timer === 0) initTimer()
+    setTimer(prev => --prev)
+  }, 1000)
+}, [])
 
+function initTimer() {
+  console.log('init timer: ', level)
+  // setTimer(prev => (levels[levelCount].length * levels[levelCount][0].length) / 2)
+  setTimer(prev => (level.length * level[0].length) / 2)
+}
+
+useEffect(() => {
+  if(timer === 0) {
+    initTimer()
+    setLevel(prev => levels[levelCount])
+  }
+}, [timer])
 
   useEffect(() => {
     updateRatPosition()
-    // console.log('level changed : ', ratPosition)
-    // // console.log('new levels : ', level)
+    initTimer()
+ 
   }, [level]);
   
+  useEffect(() => {
+    if(levelCount <= levels.length - 1) setLevel(levels[levelCount])
+    else setLevelCount(0)
+    // console.log(level)
+  }, [levelCount]);
+  
+// function changeLevel() {
+//   if()
 
-
+// }
   function updateRatPosition() {
     for (let i = 0; i < level.length; i++) {
-      // let end = false
       for (let j = 0; j < level[i].length; j++) {
         if(level[i][j] === 2) {
-          // console.log('hole : ', i, j)
           setRatPosition(currentPosition => [i, j])
         break
       } 
@@ -51,27 +93,14 @@ useEffect(() => {
   };
 }, [ratPosition])
 
-// document.addEventListener("keydown", test);
 function handleKeyDown(e) {
-  // setRatPosition(1)
-  // return
-// if(!ratPosition) return
-  console.log('r', level)
 
   if (e.key === "ArrowUp") {
-    // console.log("up", level[ratPosition[0] - 1]);
     if(level[ratPosition[0] - 1] && [1, 3].includes(level[ratPosition[0] - 1][ratPosition[1]])) {
-    //   setLevel(prevState => {
-    //     prevState[ratPosition[0]][ratPosition[1]] = 1
-    //     prevState[ratPosition[0] - 1][ratPosition[1]] = 2
-    //     return prevState
-    // })
-    // console.log('3acha lmalik')
     if(level[ratPosition[0] - 1][ratPosition[1]] === 3) {
       setTimeout(() => {
         alert('wowwwwwwwwwww')
         setLevelCount(prev => ++prev)
-        setLevel(level2)
       }, 500)
     }
     setLevel(prevState => {
@@ -82,13 +111,11 @@ function handleKeyDown(e) {
     }
   }
   if (e.key === "ArrowRight") {
-    // console.log(level[ratPosition[0], ratPosition[1] + 1] && [1, 3].includes(level[ratPosition[0]][ratPosition[1] + 1]))
     if(level[ratPosition[0]][ratPosition[1] + 1] && [1, 3].includes(level[ratPosition[0]][ratPosition[1] + 1])) {
       if(level[ratPosition[0]][ratPosition[1] + 1] === 3) {
         setTimeout(() => {
           alert('wowwwwwwwwwww')
           setLevelCount(prev => ++prev)
-          setLevel(level2)
         }, 500)
       }
       setLevel(prevState => {
@@ -96,7 +123,6 @@ function handleKeyDown(e) {
         prevState[ratPosition[0]][ratPosition[1] + 1] = 2
         return [...prevState]
     })
-    console.log("right hahhah");
   }
 }
   if (e.key === "ArrowDown") {
@@ -105,7 +131,6 @@ function handleKeyDown(e) {
         setTimeout(() => {
           alert('wowwwwwwwwwww')
           setLevelCount(prev => ++prev)
-          setLevel(level2)
         }, 500)
       }
       setLevel(prevState => {
@@ -113,8 +138,6 @@ function handleKeyDown(e) {
           prevState[ratPosition[0] + 1][ratPosition[1]] = 2
           return [...prevState]
       })
-  // updateRatPosition()
-
     }
   }
   if (e.key === "ArrowLeft") {
@@ -123,7 +146,6 @@ function handleKeyDown(e) {
         setTimeout(() => {
           alert('wowwwwwwwwwww')
           setLevelCount(prev => ++prev)
-          setLevel(level2)
         }, 500)
       }
       setLevel(prevState => {
@@ -131,43 +153,15 @@ function handleKeyDown(e) {
         prevState[ratPosition[0]][ratPosition[1] - 1] = 2
         return [...prevState]
     })
-    console.log("left", ratPosition);
   }
   }
-
-  // console.log(e.key)
 }
 
   return (
     <div className="app">
       <h1>Rat In A Maze</h1>
+      <h3>{timer}</h3>
       <div>
-        {/* <div className='maze-container'>
-          <div className="row">
-            <div className="cell"></div>
-            <div className="cell wall"></div>
-            <div className="cell wall"></div>
-            <div className="cell wall"></div>
-          </div>
-          <div className="row">
-            <div className="cell"></div>
-            <div className="cell"></div>
-            <div className="cell"></div>
-            <div className="cell wall"></div>
-          </div>
-          <div className="row">
-            <div className="cell"></div>
-            <div className="cell wall"></div>
-            <div className="cell"></div>
-            <div className="cell"></div>
-          </div>
-          <div className="row">
-            <div className="cell"></div>
-            <div className="cell wall"></div>
-            <div className="cell"></div>
-            <div className="cell"></div>
-          </div>
-        </div> */}
         <div className="maze-container">
           {level.map((row, index) => {
             return (
@@ -193,7 +187,7 @@ function handleKeyDown(e) {
             );
           })}
         </div>
-        <h2>Level {levelCount}</h2>
+        <h2>Level {levelCount + 1}</h2>
       </div>
     </div>
   );
