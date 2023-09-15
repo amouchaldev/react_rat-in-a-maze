@@ -38,7 +38,6 @@ h2 {
 .cell {
   width: var(--square-width);
   height: var(--square-height);
-  /* background-color: rgb(255, 255, 255); */
 }
 .wall {
   background-color: #000;
